@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 public class SimplePromptController {
 
     private SimplePromptService azurePromptService;
-    private SemanticKernelPromptService skPromptService;
+    private SemanticKernelPromptService semanticKernelPromptService;
 
     SimplePromptController(SimplePromptService azurePromptService,
-                           SemanticKernelPromptService skPromptService) {
+                           SemanticKernelPromptService semanticKernelPromptService) {
         this.azurePromptService = azurePromptService;
-        this.skPromptService = skPromptService;
+        this.semanticKernelPromptService = semanticKernelPromptService;
     }
 
     @GetMapping("/chat1")
@@ -33,8 +33,18 @@ public class SimplePromptController {
 
     @GetMapping("/chat2")
     @ResponseBody
-    ResponseEntity<Response> skPrompt(@RequestParam(value = "prompt") String prompt) {
-        var res = skPromptService.getChatCompletions(prompt);
+    ResponseEntity<Response> semanticKernelPrompt(@RequestParam(value = "prompt") String prompt) {
+        var res = semanticKernelPromptService.getChatCompletions(prompt);
+        return new ResponseEntity<>(
+                new Response(res),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/chat3")
+    @ResponseBody
+    ResponseEntity<Response> azurePromptLimited(@RequestParam(value = "prompt") String prompt) {
+        var res = azurePromptService.getChatCompletionsLimited(prompt).stream()
+                .collect(Collectors.joining("\n"));
         return new ResponseEntity<>(
                 new Response(res),
                 HttpStatus.OK);
