@@ -26,13 +26,12 @@ public class SimplePromptService {
         this.deploymentOrModelName = deploymentOrModelName;
     }
 
-    public List<String> getChatCompletions() {
-
+    public List<String> getChatCompletions(String prompt) {
         ChatCompletions completions = aiClientService.get()
                 .getChatCompletions(
                         deploymentOrModelName,
                         new ChatCompletionsOptions(
-                                List.of(new ChatRequestUserMessage(GREETING_MESSAGE))))
+                                List.of(new ChatRequestUserMessage(prompt))))
                 .block();
         List<String> messages = completions.getChoices().stream()
                 .map(c -> c.getMessage().getContent())

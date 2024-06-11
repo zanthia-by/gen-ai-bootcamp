@@ -1,9 +1,8 @@
 package com.epam.training.gen.ai.semantic.client;
 
 import com.azure.ai.openai.OpenAIAsyncClient;
-import com.microsoft.semantickernel.connectors.ai.openai.util.ClientType;
-import com.microsoft.semantickernel.connectors.ai.openai.util.OpenAIClientProvider;
-import com.microsoft.semantickernel.exceptions.ConfigurationException;
+import com.azure.ai.openai.OpenAIClientBuilder;
+import com.azure.core.credential.AzureKeyCredential;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,12 +27,9 @@ public class OpenAIAsyncClientServiceImpl implements OpenAIAsyncClientService {
 
     @Override
     public OpenAIAsyncClient get() {
-        OpenAIClientProvider provider = new OpenAIClientProvider(configuredSettings, ClientType.AZURE_OPEN_AI);
-        try {
-            return provider.getAsyncClient();
-        } catch (ConfigurationException e) {
-            log.error(e.getMessage());
-        }
-        return null;
+        return new OpenAIClientBuilder()
+                .credential(new AzureKeyCredential(configuredSettings.get("client.azureopenai.key")))
+                .endpoint(configuredSettings.get("client.azureopenai.endpoint"))
+                .buildAsyncClient();
     }
 }
